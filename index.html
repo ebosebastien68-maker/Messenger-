@@ -6,7 +6,8 @@
     <meta name="description" content="Messagerie sécurisée avec conversations admin et actualités">
     <meta name="theme-color" content="#4F46E5">
     
-    <title>Mrssenger World Connect</title>
+    <title>World Connect</title>
+    
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/wc.png">
@@ -735,6 +736,168 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
+        /* Admin Publish Section */
+        .admin-publish-header {
+            margin-bottom: 2rem;
+        }
+
+        .admin-publish-container {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .publish-form {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .file-upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--light-gray);
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary);
+            background: #F0F4FF;
+        }
+
+        #file-upload-placeholder p {
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .publish-preview {
+            position: sticky;
+            top: 120px;
+        }
+
+        .publish-preview h3 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .preview-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--warning);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .preview-empty {
+            color: var(--gray);
+            font-style: italic;
+        }
+
+        #preview-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            min-height: 40px;
+        }
+
+        #preview-content {
+            line-height: 1.8;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+
+        /* User/Admin Selection Lists */
+        #admin-list, #user-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .user-select-item, .admin-select-item {
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-select-item:hover, .admin-select-item:hover {
+            background: var(--light-gray);
+            border-color: var(--primary);
+        }
+
+        .user-select-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .user-select-info h4 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .user-select-info p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        /* Responsive Admin Panel */
+        @media (max-width: 1024px) {
+            .admin-publish-container {
+                grid-template-columns: 1fr;
+            }
+
+            .publish-preview {
+                position: relative;
+                top: 0;
+            }
+        }
+
         /* Notification Permission Banner */
         .notification-banner {
             background: var(--primary);
@@ -772,15 +935,18 @@
 
     <!-- Notification Permission Banner -->
     <div id="notification-banner" class="notification-banner hidden">
-        <span>🔔 Activez les notifications pour ne rien manquer</span>
-        <button class="btn btn-outline" onclick="requestNotificationPermission()">Activer</button>
+        <span>🔔 Restez informé des nouveaux messages et actualités</span>
+        <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-outline" onclick="requestNotificationPermission()">👍 Activer</button>
+            <button class="btn btn-outline" onclick="dismissNotificationBanner()">Plus tard</button>
+        </div>
     </div>
 
     <!-- Auth Screen -->
     <div id="auth-screen">
         <div class="logo" style="justify-content: center; margin-bottom: 2rem;">
             <img src="/wc.png" alt="Logo">
-            <span>Messenger World Connect</span>
+            <span>World Connect</span>
         </div>
 
         <h2 id="auth-title">Connexion</h2>
@@ -840,9 +1006,9 @@
 
         <!-- Navigation Tabs -->
         <nav class="nav-tabs">
-            <div class="nav-tab active" onclick="switchTab('conversations')">💬 Conversations</div>
+            <div class="nav-tab active" onclick="switchTab('conversations')">💬 Messagerie</div>
             <div class="nav-tab" onclick="switchTab('posts')">📢 Actualités</div>
-            <div class="nav-tab" id="admin-tab" class="hidden" onclick="switchTab('admin')">⚙️ Admin</div>
+            <div class="nav-tab hidden" id="admin-tab" onclick="switchTab('admin')">✍️ Publier</div>
         </nav>
 
         <!-- Conversations Container -->
@@ -851,16 +1017,21 @@
                 <div class="conversations-list">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3>Messages</h3>
-                        <button class="btn btn-primary" onclick="showNewConversationModal()">+ Nouveau</button>
+                        <button class="btn btn-primary" id="new-conv-btn" onclick="showNewConversationModal()">+ Nouveau</button>
                     </div>
-                    <div id="conversations-list"></div>
+                    <div id="conversations-list">
+                        <div class="empty-state">
+                            <div class="spinner"></div>
+                            <p>Chargement...</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="chat-area" id="chat-area">
                     <div class="empty-state">
                         <div class="empty-state-icon">💬</div>
-                        <h3>Sélectionnez une conversation</h3>
-                        <p>Choisissez une conversation dans la liste ou créez-en une nouvelle</p>
+                        <h3 id="chat-empty-title">Sélectionnez une conversation</h3>
+                        <p id="chat-empty-subtitle">Choisissez une conversation dans la liste</p>
                     </div>
                 </div>
             </div>
@@ -877,30 +1048,110 @@
 
         <!-- Admin Container -->
         <div id="admin-container" class="container">
-            <h2>⚙️ Administration</h2>
-            <div class="posts-header">
+            <div class="admin-publish-header">
                 <div>
-                    <h3>Statistiques de la plateforme</h3>
+                    <h2>✍️ Publier une actualité</h2>
+                    <p style="color: var(--gray); margin-top: 0.5rem;">Créez et partagez des actualités avec tous les utilisateurs</p>
                 </div>
             </div>
-            <div id="admin-stats"></div>
+            
+            <div class="admin-publish-container">
+                <form id="admin-publish-form" class="publish-form">
+                    <div class="form-group">
+                        <label>📝 Titre de l'actualité</label>
+                        <input type="text" id="admin-post-title" placeholder="Entrez un titre accrocheur..." required maxlength="100">
+                        <small style="color: var(--gray);">Maximum 100 caractères</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>📄 Contenu</label>
+                        <textarea id="admin-post-content" rows="8" placeholder="Rédigez votre actualité ici...&#10;&#10;Vous pouvez écrire plusieurs paragraphes pour détailler votre message." required></textarea>
+                        <small style="color: var(--gray);">Soyez clair et concis</small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label>🎯 Type de contenu</label>
+                            <select id="admin-post-type" onchange="updateMediaUpload()">
+                                <option value="text">📝 Texte uniquement</option>
+                                <option value="audio">🎵 Audio</option>
+                                <option value="video">🎥 Vidéo</option>
+                                <option value="file">📎 Fichier</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" style="flex: 1;">
+                            <label>📅 Statut de publication</label>
+                            <select id="admin-post-status">
+                                <option value="published">✅ Publier immédiatement</option>
+                                <option value="draft">📋 Enregistrer comme brouillon</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="media-upload-section" class="form-group hidden">
+                        <label id="media-upload-label">📎 Fichier média</label>
+                        <div class="file-upload-area" onclick="document.getElementById('admin-media-file').click()">
+                            <input type="file" id="admin-media-file" accept="*/*" style="display: none;" onchange="previewMediaFile(event)">
+                            <div id="file-upload-placeholder">
+                                <span style="font-size: 3rem;">📁</span>
+                                <p>Cliquez pour sélectionner un fichier</p>
+                                <small style="color: var(--gray);">Formats acceptés: Audio, Vidéo, PDF, Images</small>
+                            </div>
+                            <div id="file-preview" class="hidden"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="resetPublishForm()">🔄 Réinitialiser</button>
+                        <button type="submit" class="btn btn-primary" style="min-width: 200px;">
+                            🚀 Publier l'actualité
+                        </button>
+                    </div>
+                </form>
+
+                <div class="publish-preview">
+                    <h3>👁️ Aperçu en temps réel</h3>
+                    <div class="preview-card" id="preview-card">
+                        <div class="preview-badge">APERÇU</div>
+                        <h3 id="preview-title" class="preview-empty">Votre titre apparaîtra ici</h3>
+                        <div class="post-meta">
+                            <span>👤 ${currentUser?.firstname || 'Admin'} ${currentUser?.lastname || ''}</span>
+                            <span>📅 ${new Date().toLocaleDateString('fr-FR')}</span>
+                        </div>
+                        <div id="preview-content" class="preview-empty">Votre contenu apparaîtra ici au fur et à mesure que vous tapez...</div>
+                        <div id="preview-media" class="hidden"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Modal: New Conversation -->
+    <!-- Modal: New Conversation (USER) -->
     <div id="new-conversation-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Nouvelle conversation</h3>
+                <h3 class="modal-title">💬 Nouvelle conversation</h3>
                 <button class="close-btn" onclick="closeModal('new-conversation-modal')">&times;</button>
             </div>
-            <form id="new-conversation-form">
-                <div class="form-group">
-                    <label>Contacter le support</label>
-                    <p style="color: var(--gray); font-size: 0.875rem;">Une conversation sera créée avec un administrateur</p>
-                </div>
-                <button type="submit" class="btn btn-primary">Démarrer la conversation</button>
-            </form>
+            <div id="admin-list-container">
+                <p style="color: var(--gray); margin-bottom: 1rem;">Sélectionnez un administrateur pour démarrer une conversation</p>
+                <div id="admin-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Select User (ADMIN) -->
+    <div id="select-user-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">👥 Choisir un utilisateur</h3>
+                <button class="close-btn" onclick="closeModal('select-user-modal')">&times;</button>
+            </div>
+            <div id="user-list-container">
+                <input type="text" id="user-search" class="form-control" placeholder="🔍 Rechercher un utilisateur..." oninput="filterUsers()" style="margin-bottom: 1rem;">
+                <div id="user-list"></div>
+            </div>
         </div>
     </div>
 
@@ -911,37 +1162,21 @@
                 <h3 class="modal-title">Nouvelle actualité</h3>
                 <button class="close-btn" onclick="closeModal('create-post-modal')">&times;</button>
             </div>
-            <form id="create-post-form">
-                <div class="form-group">
-                    <label>Titre</label>
-                    <input type="text" id="post-title" placeholder="Titre de l'actualité" required>
-                </div>
-                <div class="form-group">
-                    <label>Contenu</label>
-                    <textarea id="post-content" rows="6" placeholder="Contenu de l'actualité..." required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Type</label>
-                    <select id="post-type">
-                        <option value="text">Texte</option>
-                        <option value="audio">Audio</option>
-                        <option value="video">Vidéo</option>
-                        <option value="file">Fichier</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Publier</button>
-            </form>
+            <p style="color: var(--gray); margin-bottom: 1rem;">Utilisez l'onglet "Publier" pour créer des actualités avec un éditeur complet</p>
+            <button class="btn btn-primary" onclick="closeModal('create-post-modal'); switchTab('admin');">
+                Aller à l'éditeur
+            </button>
         </div>
     </div>
 
     <script>
         // =====================================================================
-        // CONFIGURATION - Charger depuis .env
+        // CONFIGURATION - Connecté à votre projet Supabase
         // =====================================================================
         const CONFIG = {
-            SUPABASE_URL: 'https://votre-project-ref.supabase.co',
-            SUPABASE_ANON_KEY: 'votre-anon-key',
-            EDGE_FUNCTION_URL: 'https://votre-project-ref.supabase.co/functions/v1',
+            SUPABASE_URL: 'https://kqctjqnsqbgdafbnjyvb.supabase.co',
+            SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxY3RqcW5zcWJnZGFmYm5qeXZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1MzcwNzMsImV4cCI6MjA3OTExMzA3M30.ML-jw1d9LzSvhCSRE3N4uPQFC2Vvwo8LykmIU-JmH2E',
+            EDGE_FUNCTION_URL: 'https://kqctjqnsqbgdafbnjyvb.supabase.co/functions/v1',
             VAPID_PUBLIC_KEY: 'BIKf2Qo-ab-baBmT5yRVZEr2TwiWItFOrDXlX-xPfjVf0zBE2A3fHdd5xxftxrV_BNh95f2vShNriJX9-8nxdm8'
         };
 
@@ -960,6 +1195,8 @@
         let recordingStartTime = null;
         let recordingTimer = null;
         let currentAudioPlayers = {};
+        let messageQueue = [];
+        let syncTimeout = null;
 
         // =====================================================================
         // INITIALISATION
@@ -975,6 +1212,13 @@
                 if (session) {
                     await loadUserData(session.user);
                     showApp();
+                    
+                    // Demander permission notifications après connexion
+                    setTimeout(() => {
+                        if (Notification.permission === 'default') {
+                            requestNotificationPermission();
+                        }
+                    }, 2000);
                 } else {
                     showAuthScreen();
                 }
@@ -983,11 +1227,6 @@
                 if ('serviceWorker' in navigator) {
                     const registration = await navigator.serviceWorker.register('/service-worker.js');
                     console.log('Service Worker enregistré:', registration);
-                    
-                    // Vérifier permission notifications
-                    if (Notification.permission === 'default') {
-                        document.getElementById('notification-banner').classList.remove('hidden');
-                    }
                 }
             } catch (error) {
                 console.error('Erreur initialisation:', error);
@@ -1078,15 +1317,78 @@
                 if (data.role === 'admin') {
                     document.getElementById('admin-tab').classList.remove('hidden');
                     document.getElementById('create-post-btn').classList.remove('hidden');
+                    document.getElementById('new-conv-btn').textContent = '👥 Utilisateurs';
+                } else {
+                    document.getElementById('new-conv-btn').textContent = '💬 Contacter admin';
                 }
 
                 // Charger les données
                 await loadConversations();
                 await loadPosts();
 
+                // Auto-charger première conversation ou créer une pour user
+                if (data.role !== 'admin') {
+                    await autoLoadOrCreateConversation();
+                }
+
                 // S'abonner aux changements temps réel
                 subscribeToRealtime();
+                
+                // Activer sync périodique
+                startMessageSync();
             }
+        }
+
+        // =====================================================================
+        // AUTO-CHARGEMENT CONVERSATION (USER)
+        // =====================================================================
+        async function autoLoadOrCreateConversation() {
+            try {
+                // Vérifier si une conversation existe déjà
+                const { data: existingConv } = await supabase
+                    .from('conversations')
+                    .select('id')
+                    .eq('user_id', currentUser.id)
+                    .limit(1)
+                    .single();
+
+                if (existingConv) {
+                    // Charger la conversation existante
+                    await loadConversationById(existingConv.id);
+                } else {
+                    // Créer conversation avec premier admin
+                    const { data: firstAdmin } = await supabase
+                        .from('users')
+                        .select('id, firstname, lastname')
+                        .eq('role', 'admin')
+                        .limit(1)
+                        .single();
+
+                    if (firstAdmin) {
+                        const { data: newConvId } = await supabase.rpc('fn_get_or_create_admin_conversation', {
+                            p_user_id: currentUser.id,
+                            p_admin_id: firstAdmin.id
+                        });
+
+                        await loadConversationById(newConvId);
+                        await loadConversations();
+                    } else {
+                        // Aucun admin disponible
+                        document.getElementById('chat-empty-title').textContent = '⏳ Patientez';
+                        document.getElementById('chat-empty-subtitle').textContent = 'Un administrateur vous prendra en charge prochainement';
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur auto-load conversation:', error);
+            }
+        }
+
+        async function loadConversationById(convId) {
+            currentConversation = convId;
+            
+            // Charger et afficher la conversation
+            const event = { target: { closest: () => ({ classList: { add: () => {}, remove: () => {} } }) } };
+            await loadConversation(convId);
         }
 
         // =====================================================================
@@ -1312,31 +1614,138 @@
         // =====================================================================
         // NOUVELLE CONVERSATION
         // =====================================================================
-        function showNewConversationModal() {
-            document.getElementById('new-conversation-modal').classList.add('active');
+        async function showNewConversationModal() {
+            if (currentUser.role === 'admin') {
+                // Admin: Afficher liste des utilisateurs
+                await loadUsersList();
+                document.getElementById('select-user-modal').classList.add('active');
+            } else {
+                // User: Afficher liste des admins
+                await loadAdminsList();
+                document.getElementById('new-conversation-modal').classList.add('active');
+            }
         }
 
-        document.getElementById('new-conversation-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
+        async function loadAdminsList() {
             try {
-                // Créer conversation avec premier admin disponible
+                const { data: admins, error } = await supabase
+                    .from('users')
+                    .select('id, firstname, lastname, email')
+                    .eq('role', 'admin')
+                    .order('created_at', { ascending: true });
+
+                if (error) throw error;
+
+                const container = document.getElementById('admin-list');
+
+                if (!admins || admins.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p>⏳ Aucun administrateur disponible pour le moment</p>
+                            <p style="font-size: 0.875rem; color: var(--gray);">Un admin vous prendra en charge prochainement</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = admins.map(admin => `
+                    <div class="admin-select-item" onclick="createConversationWithAdmin('${admin.id}')">
+                        <div class="user-select-avatar">${admin.firstname.charAt(0)}</div>
+                        <div class="user-select-info">
+                            <h4>${admin.firstname} ${admin.lastname}</h4>
+                            <p>${admin.email}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Erreur chargement admins:', error);
+            }
+        }
+
+        async function createConversationWithAdmin(adminId) {
+            try {
                 const { data, error } = await supabase.rpc('fn_get_or_create_admin_conversation', {
-                    p_user_id: currentUser.id
+                    p_user_id: currentUser.id,
+                    p_admin_id: adminId
                 });
 
                 if (error) throw error;
 
                 closeModal('new-conversation-modal');
                 await loadConversations();
-                loadConversation(data);
+                await loadConversationById(data);
                 
                 showAlert('Conversation créée avec succès', 'success');
             } catch (error) {
                 console.error('Erreur création conversation:', error);
                 showAlert('Erreur lors de la création de la conversation', 'error');
             }
-        });
+        }
+
+        async function loadUsersList() {
+            try {
+                const { data: users, error } = await supabase
+                    .from('users')
+                    .select('id, firstname, lastname, email, created_at')
+                    .neq('role', 'admin')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const container = document.getElementById('user-list');
+
+                if (!users || users.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p>Aucun utilisateur inscrit</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = users.map(user => `
+                    <div class="user-select-item" onclick="createConversationWithUser('${user.id}')">
+                        <div class="user-select-avatar">${user.firstname.charAt(0)}</div>
+                        <div class="user-select-info">
+                            <h4>${user.firstname} ${user.lastname}</h4>
+                            <p>${user.email}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Erreur chargement utilisateurs:', error);
+            }
+        }
+
+        async function createConversationWithUser(userId) {
+            try {
+                const { data, error } = await supabase.rpc('fn_get_or_create_admin_conversation', {
+                    p_user_id: userId,
+                    p_admin_id: currentUser.id
+                });
+
+                if (error) throw error;
+
+                closeModal('select-user-modal');
+                await loadConversations();
+                await loadConversationById(data);
+                
+                showAlert('Conversation créée avec succès', 'success');
+            } catch (error) {
+                console.error('Erreur création conversation:', error);
+                showAlert('Erreur lors de la création de la conversation', 'error');
+            }
+        }
+
+        function filterUsers() {
+            const searchTerm = document.getElementById('user-search').value.toLowerCase();
+            const items = document.querySelectorAll('.user-select-item');
+            
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchTerm) ? 'flex' : 'none';
+            });
+        }
 
         // =====================================================================
         // ACTUALITÉS (POSTS)
