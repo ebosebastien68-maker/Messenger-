@@ -6,8 +6,7 @@
     <meta name="description" content="Messagerie sécurisée avec conversations admin et actualités">
     <meta name="theme-color" content="#4F46E5">
     
-    <title>Admin Chat - Messagerie</title>
-    
+    <title>Mrssenger World Connect</title>
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/wc.png">
@@ -781,7 +780,7 @@
     <div id="auth-screen">
         <div class="logo" style="justify-content: center; margin-bottom: 2rem;">
             <img src="/wc.png" alt="Logo">
-            <span>Admin Chat</span>
+            <span>Messenger World Connect</span>
         </div>
 
         <h2 id="auth-title">Connexion</h2>
@@ -829,7 +828,7 @@
         <header>
             <div class="logo">
                 <img src="/wc.png" alt="Logo">
-                <span>Admin Chat</span>
+                <span>World Connect</span>
             </div>
             <div class="user-info">
                 <span id="user-name"></span>
@@ -937,12 +936,12 @@
 
     <script>
         // =====================================================================
-        // CONFIGURATION - Connecté à votre projet Supabase
+        // CONFIGURATION - Charger depuis .env
         // =====================================================================
         const CONFIG = {
-            SUPABASE_URL: 'https://kqctjqnsqbgdafbnjyvb.supabase.co',
-            SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxY3RqcW5zcWJnZGFmYm5qeXZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1MzcwNzMsImV4cCI6MjA3OTExMzA3M30.ML-jw1d9LzSvhCSRE3N4uPQFC2Vvwo8LykmIU-JmH2E',
-            EDGE_FUNCTION_URL: 'https://kqctjqnsqbgdafbnjyvb.supabase.co/functions/v1',
+            SUPABASE_URL: 'https://votre-project-ref.supabase.co',
+            SUPABASE_ANON_KEY: 'votre-anon-key',
+            EDGE_FUNCTION_URL: 'https://votre-project-ref.supabase.co/functions/v1',
             VAPID_PUBLIC_KEY: 'BIKf2Qo-ab-baBmT5yRVZEr2TwiWItFOrDXlX-xPfjVf0zBE2A3fHdd5xxftxrV_BNh95f2vShNriJX9-8nxdm8'
         };
 
@@ -1785,4 +1784,4 @@
         });
     </script>
 </body>
-                  </html>
+    </html>
