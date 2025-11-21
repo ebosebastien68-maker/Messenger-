@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="World Connect - Messagerie sécurisée avec conversations admin et actualités">
+    <meta name="theme-color" content="#4F46E5">
+    
+    <title>World Connect - Messagerie Sécurisée</title>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/wc.png">
+    <link rel="apple-touch-icon" href="/wc.png">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/umd/supabase.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        /* Animations personnalisées */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .gradient-border {
+            position: relative;
+            background: white;
+        }
+
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+
+        /* Scrollbar personnalisée */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+
+        /* Loading animation */
+        .dot-pulse {
+            position: relative;
+            width: 10px;
+            height: 10px;
+            border-radius: 5px;
+            background-color: #4F46E5;
+            color: #4F46E5;
+            animation: dot-pulse 1.5s infinite linear;
+        }
+
+        .dot-pulse::before, .dot-pulse::after {
+            content: '';
+            display: inline-block;
+            position: absolute;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 5px;
+            background-color: #4F46E5;
+            color: #4F46E5;
+        }
+
+        .dot-pulse::before {
+            left: -15px;
+            animation: dot-pulse-before 1.5s infinite linear;
+        }
+
+        .dot-pulse::after {
+            left: 15px;
+            animation: dot-pulse-after 1.5s infinite linear;
+        }
+
+        @keyframes dot-pulse-before {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.5); opacity: 0.5; }
+        }
+
+        @keyframes dot-pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.8); opacity: 0.6; }
+        }
+
+        @keyframes dot-pulse-after {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+
+        /* Message bubble animations */
+        .message-bubble {
+            animation: messageSlideIn 0.3s ease-out;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Online status pulse */
+        .status-online {
+            position: relative;
+        }
+
+        .status-online::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: inherit;
+            animation: pulse-ring 1.5s ease-out infinite;
+        }
+
+        /* Hover effects */
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Custom input focus */
+        .input-focus:focus {
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#10B981',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center z-50">
+        <div class="text-center">
+            <div class="w-20 h-20 bg-white bg-opacity-20 backdrop-blur-lg rounded-2xl mx-auto mb-6 flex items-center justify-center">
+                <div class="dot-pulse"></div>
+            </div>
+            <h2 class="text-white text-2xl font-bold mb-2">World Connect</h2>
+            <p class="text-white text-opacity-90">Chargement...</p>
+        </div>
+    </div>
+
+    <!-- Auth Screen -->
+    <div id="auth-screen" class="hidden min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-3xl shadow-2xl w-full max-w-md p-8 animate-slide-in">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+                    WC
+                </div>
+                <h1 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                    World Connect
+                </h1>
+                <p class="text-gray-600 mt-2" id="auth-subtitle">Bon retour parmi nous</p>
+            </div>
+
+            <div id="alert-container" class="mb-4"></div>
+
+            <form id="auth-form" class="space-y-4">
+                <div id="signup-fields" class="hidden space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input
+                            type="text"
+                            id="firstname"
+                            placeholder="Prénom"
+                            class="px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-600 focus:outline-none transition-all input-focus"
+                        />
+                        <input
+                            type="text"
+                            id="lastname"
+                            placeholder="Nom"
+                            class="px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-600 focus:outline-none transition-all input-focus"
+                        />
+                    </div>
+                </div>
+                
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Email"
+                    required
+                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-600 focus:outline-none transition-all input-focus"
+                />
+                
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Mot de passe"
+                    required
+                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-600 focus:outline-none transition-all input-focus"
+                />
+
+                <button
+                    type="submit"
+                    class="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
+                >
+                    <span id="auth-btn-text">Se connecter</span>
+                </button>
+
+                <p class="text-center text-gray-600">
+                    <span id="auth-switch-text">Pas encore de compte ?</span>
+                    <button
+                        type="button"
+                        onclick="toggleAuthMode()"
+                        class="ml-2 text-indigo-600 font-semibold hover:underline"
+                    >
+                        <span id="auth-switch-link">S'inscrire</span>
+                    </button>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="hidden h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 px-6 py-4 glass-effect sticky top-0 z-40">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md">
+                        WC
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">World Connect</h1>
+                        <p class="text-sm text-gray-500">Messagerie sécurisée</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <span class="text-sm font-medium text-gray-700" id="user-display-name"></span>
+                    <span id="user-badge" class="px-3 py-1 rounded-full text-xs font-semibold"></span>
+                    <button
+                        onclick="logout()"
+                        class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        title="Déconnexion"
+                    >
+                        <i data-lucide="log-out" class="w-5 h-5 text-gray-600"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="bg-white border-b border-gray-200 px-6">
+            <div class="flex gap-8">
+                <button
+                    onclick="switchTab('messages')"
+                    data-tab="messages"
+                    class="tab-btn py-4 px-2 border-b-2 border-indigo-600 text-indigo-600 font-medium transition-all"
+                >
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="message-square" class="w-5 h-5"></i>
+                        <span>Messages</span>
+                    </div>
+                </button>
+
+                <button
+                    onclick="switchTab('posts')"
+                    data-tab="posts"
+                    class="tab-btn py-4 px-2 border-b-2 border-transparent text-gray-600 hover:text-gray-900 font-medium transition-all"
+                >
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="trending-up" class="w-5 h-5"></i>
+                        <span>Actualités</span>
+                    </div>
+                </button>
+
+                <button
+                    id="admin-tab-btn"
+                    onclick="switchTab('admin')"
+                    data-tab="admin"
+                    class="hidden tab-btn py-4 px-2 border-b-2 border-transparent text-gray-600 hover:text-gray-900 font-medium transition-all"
+                >
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="edit-3" class="w-5 h-5"></i>
+                        <span>Publier</span>
+                    </div>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Content Area -->
+        <div class="flex-1 overflow-hidden">
+            <!-- Messages Tab -->
+            <div id="messages-container" class="h-full flex">
+                <!-- Conversations List -->
+                <div class="w-96 bg-white border-r border-gray-200 flex flex-col">
+                    <div class="p-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="font-semibold text-lg">Messages</h2>
+                            <button
+                                onclick="showNewConversationModal()"
+                                class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                title="Nouvelle conversation"
+                            >
+                                <i data-lucide="plus" class="w-5 h-5 text-gray-600"></i>
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <i data-lucide="search" class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                            <input
+                                type="text"
+                                placeholder="Rechercher..."
+                                class="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                                oninput="searchConversations(this.value)"
+                            />
+                        </div>
+                    </div>
+
+                    <div id="conversations-list" class="flex-1 overflow-y-auto"></div>
+                </div>
+
+                <!-- Chat Area -->
+                <div id="chat-area" class="flex-1 flex flex-col bg-gray-50">
+                    <!-- Empty State -->
+                    <div id="chat-empty-state" class="flex-1 flex flex-col items-center justify-center text-gray-500">
+                        <i data-lucide="message-square" class="w-16 h-16 mb-4 opacity-50"></i>
+                        <h3 class="text-xl font-semibold mb-2">Sélectionnez une conversation</h3>
+                        <p>Choisissez une conversation pour commencer</p>
+                    </div>
+
+                    <!-- Chat Content (Hidden by default) -->
+                    <div id="chat-content" class="hidden flex-1 flex flex-col">
+                        <!-- Chat Header -->
+                        <div class="bg-white border-b border-gray-200 px-6 py-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div id="chat-avatar" class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold"></div>
+                                    <div>
+                                        <h3 id="chat-name" class="font-semibold text-gray-900"></h3>
+                                        <p class="text-sm text-gray-500">
+                                            <span id="chat-status"></span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                        <i data-lucide="phone" class="w-5 h-5 text-gray-600"></i>
+                                    </button>
+                                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                        <i data-lucide="video" class="w-5 h-5 text-gray-600"></i>
+                                    </button>
+                                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                        <i data-lucide="more-vertical" class="w-5 h-5 text-gray-600"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Messages -->
+                        <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
+
+                        <!-- Input Area -->
+                        <div class="bg-white border-t border-gray-200 p-4">
+                            <div class="flex items-center gap-3">
+                                <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                    <i data-lucide="plus" class="w-5 h-5 text-gray-600"></i>
+                                </button>
+                                <input
+                                    type="text"
+                                    id="message-input"
+                                    placeholder="Écrivez votre message..."
+                                    class="flex-1 px-4 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                                    onkeypress="if(event.key === 'Enter') sendMessage()"
+                                />
+                                <button
+                                    onclick="toggleVoiceRecording()"
+                                    id="voice-btn"
+                                    class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                >
+                                    <i data-lucide="mic" class="w-5 h-5 text-gray-600"></i>
+                                </button>
+                                <button
+                                    onclick="sendMessage()"
+                                    class="p-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full transition-colors"
+                                >
+                                    <i data-lucide="send" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posts Tab -->
+            <div id="posts-container" class="hidden h-full overflow-y-auto p-6">
+                <div class="max-w-5xl mx-auto">
+                    <div class="mb-6 flex justify-between items-center">
+                        <h2 class="text-2xl font-bold text-gray-900">Actualités</h2>
+                    </div>
+                    <div id="posts-grid" class="grid gap-6"></div>
+                </div>
+            </div>
+
+            <!-- Admin Tab -->
+            <div id="admin-container" class="hidden h-full overflow-y-auto">
+                <!-- Contenu chargé depuis admin-panel.html -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: New Conversation -->
+    <div id="new-conversation-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] overflow-y-auto animate-slide-in">
+            <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <h3 class="text-lg font-semibold">Nouvelle conversation</h3>
+                <button
+                    onclick="closeModal('new-conversation-modal')"
+                    class="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                    <i data-lucide="x" class="w-5 h-5 text-gray-600"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <p class="text-gray-600 mb-4">Sélectionnez un contact pour démarrer une conversation</p>
+                <div id="contacts-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/messages.js"></script>
+    <script src="js/posts.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+  </html>
